@@ -1,2 +1,2 @@
-# MiniProj_FrontEnd
+# MiniProj
 -
