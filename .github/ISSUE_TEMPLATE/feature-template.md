@@ -1,17 +1,16 @@
 ---
-name: Custom issue template
-about: 자유 템플릿
+name: Feature Template
+about: 메인 기능 개발 To Do List
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-##  🐝 어떤 내용인가요?
+## ⚙ 어떤 기능인가요?
 > [Branch][본인 브랜치 이름]
 
-
-## 💻 작업 내용
+## ✅ 작업 상세 내용
 - [ ] TODO
 - [ ] TODO
 - [ ] TODO
