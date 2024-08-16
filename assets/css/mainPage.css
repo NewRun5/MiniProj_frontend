@@ -1,0 +1,70 @@
+@charset "UTF-8";
+@import url(reset.css);
+
+/* 최상단 배너 */
+div#topArea {
+    height: 30px;
+    background-color: #746bf5;
+}
+
+/* 메인 컨테이너 */
+div.container {
+    padding: 40px 20px;
+}
+
+/* Jumbotron 스타일 */
+.jumbotron {
+    background-color: #746bf5;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem;
+    margin-bottom: 3rem;
+}
+
+/* Featurette 제목 */
+.featurette-heading {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+/* 메인 텍스트 */
+.lead {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+/* 요소 사이 간격 조정 */
+.featurette-divider {
+    margin: 4rem 0;
+}
+
+/* 큰 화면일 때 스타일 */
+@media (min-width: 768px) {
+    .featurette-heading {
+        font-size: 3rem;
+    }
+
+    .lead {
+        font-size: 1.5rem;
+    }
+
+    .jumbotron {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+    .img-bordered {
+        max-width: 300px; 
+        height: auto;
+        border-radius: 2px;
+        padding: 5px; 
+}
+
+
