@@ -1,0 +1,43 @@
+/* CSS DEFAULT 설정 */
+*{margin: 0; padding: 0; box-sizing: border-box; color: #2A2A2A; font-family: "font";}
+h1, h2, h3, h4, h5, h6, p {margin:0; padding:0;}
+header, footer, div, section, aside, main {margin:0; padding:0;}
+ul, ol, li {list-style: none;}
+a {text-decoration: none; color: #2A2A2A;}
+button {outline:none;}
+
+@font-face {
+  font-family: 'font';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SpoqaHanSansNeo-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* root 설정 */
+:root{
+    /* 기본 컬러 */
+    --main-color : #6D68FF; /* 메인 컬러 */
+    --text-color : #2A2A2A; /* 텍스트 기본 검정 */
+    --point-color : #413BFB; /* 강조 텍스트 및 버튼 hover 컬러 */    
+    --deco-color : #9E9BFD; /* tv 데코 버튼 컬러 / 선택 완료 버튼 */    
+    --speaker-color : #CBC9F9; /* tv 데코 버튼 컬러 */    
+    --deco-line-color : #524EBF; /* tv 데코 border / shadow 컬러*/
+    --upload-color : #D3DAFB; /* 영상 업로드 버튼 컬러*/
+    --scroll-color : #E0D3FB; /* 영상 업로드 버튼 컬러*/
+
+    /*  font-weight */
+    --regular : 400; /* 텍스트 일반 굵기 */
+    --medium : 500; /* 텍스트 중간 굵기 */
+    --semiBold : 600; /* 텍스트 semibold 굵기 */
+    --bold : 700; /* 텍스트 bold 굵기 */
+}
+
+/* root에 선언된 변수 사용 방법 */
+/* var(root에 선언된 변수명) */
+/* 예시) 비활성화 input 색상을 사용할 시 */
+/* input {background-color : var(--inactive-input-bg);} */
+
+/* 예시) font 중간 굵기 사용할 시 */
+/* p.testText {font-weight : var(--medium);} */
+
+.d_none {display: none;}
