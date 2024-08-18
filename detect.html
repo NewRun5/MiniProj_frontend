@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./assets/css/default.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="./assets/js/detect.js"></script>
+  <title>NewRun5</title>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="contents">      
+      <!-- tv 영역 -->      
+      <ul class="antenna">
+        <li></li>
+        <li></li>
+      </ul>
+      <div class="tv_cont">
+        <h1 class="service_tit">뉴런5 영상탐색 서비스명</h1>
+        <div class="tv_box">        
+          <div class="left_sec">
+            <div class="video_box">
+              <div class="upload_btn">
+                <label class="file_upload_box preview" name="uploadFiles">
+                  <span class="upload_btn">＋</span>
+                  <input name="uploadFiles" type="file" accept="mp4" class="file_upload_input">
+                </label>
+              </div>
+            </div>
+            <!-- //영상 업로드 영역 -->
+  
+            <div class="bottom_box">
+              <div class="start_box">
+                <span class="deco_btn"><span></span></span>
+                <span class="deco_btn second"><span></span></span>
+                <span class="start_btn">START</span>
+              </div>
+              <!-- // START 버튼 영역 -->
+              
+              <div class="detected_list_box selected d_none">
+                <ul></ul>
+              </div>
+            </div>
+          </div>
+          <!-- // tv 왼쪽 영역(영상화면 및 영상 속 선택 객체 표시) -->
+          
+          <div class="right_sec">
+            <div class="text_mark_box">
+              <p class="tit">HOW TO USE</p>
+              <div class="guide">
+                <p>1. TV 화면의 + 버튼을 클릭하여 영상을 업로드하세요.</p>
+                <p>2. 하단 START 버튼을 클릭하세요.</p>
+                <p>3. 리스트에서 탐색 대상을 선택하세요.</p>
+                <p>4. 편집 영상 및 탐색 문서 저장을 원하시면 ‘내보내기’버튼을 클릭하세요.</p>
+              </div>
+            </div>
+            <div class="detected_mark_box d_none">
+              <p class="tit">탐색 시간</p>
+              <div class="detected_mark_list">
+                <ul>
+                  <li>
+                    <p>1. [사람]</p>
+                    <p>등장시간: 0초 05 </p>
+                    <p>퇴장시간: 0초 45 </p>
+                  </li>
+                  <li>
+                    <p>2. [사람]</p>
+                    <p>등장시간: 0초 08 </p>
+                    <p>퇴장시간: 0초 59 </p>
+                  </li>
+                  <li>
+                    <p>3. [사람]</p>
+                    <p>등장시간: 0초 08 </p>
+                    <p>퇴장시간: 0초 59 </p>
+                  </li>
+                  <li>
+                    <p>1. [사람]</p>
+                    <p>등장시간: 0초 05 </p>
+                    <p>퇴장시간: 0초 45 </p>
+                  </li>
+                  <li>
+                    <p>2. [사람]</p>
+                    <p>등장시간: 0초 08 </p>
+                    <p>퇴장시간: 0초 59 </p>
+                  </li>
+                  <li>
+                    <p>3. [사람]</p>
+                    <p>등장시간: 0초 08 </p>
+                    <p>퇴장시간: 0초 59 </p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="speaker">
+              <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+              </ul>
+            </div>
+            <div class="btn_sec d_none">
+              <span class="go_to_main_btn"><a href="./index.html">처음으로</a></span>
+              <span class="detect_btn">탐색</span>
+            </div>
+          </div>
+          <!-- // tv 오른쪽 영역(영상에 탐지된 객체 등장/퇴장 시간 표시 및 버튼 영역)-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 팝업창 -->
+  <div class="pop_bg"></div>
+  <div class="pop_dt_bg"></div>
+  <div class="pop_cont">
+    <span class="pop_icon"><img src="./assets/img/icon_bang.svg" alt="alert mark"></span>
+    <div class="pop_txt">
+      <p>선택한 파일의 형식이 올바르지 않습니다.</p>
+      <p><strong>MP4</strong> 형식의 동영상 파일만 업로드 가능하므로</p>
+      <p>올바른 파일 형식으로 업로드하세요.</p>
+    </div>
+    <span class="cancel_btn">확인</span>
+  </div>
+
+  <!-- 영상 내 탐지된 탐색 대상 선택하기 팝업창  -->
+  <div class="pop_detected">
+    <p>탐색 대상 <span>*전체 선택을 원하시면 전체선택 버튼을 클릭해주세요.</span></p>
+    <ul class="top_btn_list">
+      <li class="select_all">전체 선택</li>
+      <li class="comp_select">선택 완료</li>
+    </ul>
+    <div class="detected_list_box">
+      <ul>
+        <li>car</li>
+        <li>tennis racket</li>
+        <li>baseball</li>
+        <li>horse</li>
+        <li>backpack</li>
+        <li>person</li>
+        <li>dog</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
