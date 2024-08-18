@@ -1,10 +1,10 @@
 /* 영상 탐색 페이지 */
 .wrapper {display: flex; align-items: center; flex-direction: column;}
-.contents {width: 100%; max-width: 1200px; min-height: 100vh; display: flex; align-items: center; flex-direction: column; padding-top: 40px;}
+.contents {width: 100%; max-width: 1200px; min-height: 100vh; display: flex; align-items: center; flex-direction: column; padding-top: 40px; padding-bottom: 40px;}
 .service_tit {padding-bottom: 20px; font-size: 32px; font-weight: 700; color: #fff;}
 
 /* tv 영역 */
-.antenna {width: 100%; max-width: 800px; min-width:300px; display: flex; justify-content: center; margin-left: calc(-100vw + 800px);}
+.antenna {width: 100%; max-width: 800px; min-width:300px; display: flex; justify-content: center; margin-left: -50vw;}
 .antenna li {width: 20px; height: 180px; margin-right: 80px; margin-bottom: -50px; background-color: var(--main-color); border-radius:20px; transform: rotate(-30deg);}
 .antenna li:last-child {transform: rotate(30deg); margin-right: 0; margin-left: 20px;}
 .tv_cont { width: 100%; max-width: 1160px; min-width:300px; padding: 40px; background-color: var(--main-color); border-radius:20px;}
