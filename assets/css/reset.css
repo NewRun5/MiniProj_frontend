@@ -1,11 +1,7 @@
 @charset "UTF-8";
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
 
-/*///////////////////////// CSS 리셋 파일 시작 /////////////////////////*/
-
 * {
-    color: #222;
-    /* 기본 글 색상 */
     font-family: "Nanum Gothic", sans-serif;
     /* 나눔고딕체 적용  */
     text-decoration: none;
@@ -15,7 +11,7 @@
     box-sizing: border-box;
 }
 
-/*  body {  background-color: #fff; }      배경색이 적용될 때 사용함 */
+/*  body {  background-color: #fff; } 배경색이 적용될 때 사용함 */
 
 a:link {
     color: #333;
@@ -52,16 +48,4 @@ ul {
     /* HTML요소의 속성으로 플렉스 레이아웃 적용 */
     display: flex;
 }
-
-
 /*///////////////////////// CSS 리셋 파일 끝 /////////////////////////*/
-
-div#topArea{
-height: 30px;
-background-color:#746bf5;
-}
-
-
-div.container{
-    padding: 20px;
-}
