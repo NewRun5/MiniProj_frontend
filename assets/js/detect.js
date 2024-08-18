@@ -51,10 +51,19 @@ $(document).ready(function() {
     }
   });
 
+  // Timeline 설정
+  let timeline = [];
+
+  // det_result를 전역변수로 선언
+  let detResult = [];
+
   // START 버튼 클릭시, 업로드된 영상을 AI모델에서 1차 분석한 후, 탐색된 객체 리스트 반환  
 $(".start_btn").on("click", () => {
   const fileInput = $("#uploadFilesInput")[0];
   const file = fileInput.files[0];
+
+  // 시작 시간
+  let startTime = Date.now();
 
   if (!file) {
       // 파일이 선택되지 않은 경우
@@ -76,26 +85,58 @@ $(".start_btn").on("click", () => {
 
       // AJAX 요청
       $.ajax({
-          url: 'http://127.0.0.1:8000/uploadfile/',
+          url: 'http://localhost:8000/uploadfile/',
           type: 'POST',
           data: formData,
           processData: false,
           contentType: false,  // FormData를 사용할 때는 contentType을 false로 설정
+          xhr: function() {
+            var xhr = new window.XMLHttpRequest();
+            // 요청이 진행되는 동안
+            xhr.upload.addEventListener("progress", function(evt) {
+                if (evt.lengthComputable) {
+                    var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                    // 스피너의 진행률을 업데이트
+                    $(".loading-spinner::before").css("top", (100 - percentComplete) + "%");
+                    $(".loading-percentage").text(percentComplete + "%");
+                }
+            }, false);
+            // 요청이 완료되거나 실패했을 때
+            xhr.addEventListener("load", function() {
+                $(".loading-spinner::before").css("top", "0%");
+                $(".loading-percentage").text("100%");
+            });
+            xhr.addEventListener("error", function() {
+                $(".loading-spinner::before").css("top", "0%");
+                $(".loading-percentage").text("Error");
+            });
+            return xhr;
+          },
           success: function(response) {
+
               console.log("api connected");
               console.log("response : ", response); // 서버 응답 출력
 
               // 서버에서 반환된 데이터
               const responseData = response;
+
+              // det_result 데이터를 전역변수에 저장
+              detResult = responseData.det_result || [];
+
+              timeline = responseData.timeline || [];
+
               const labelList = responseData.label_list || [];
               
               // label_list의 값을 detected_obj_list에 추가
               let detected_obj_list = [...labelList];  // 배열 복사
 
               // 배열 길이만큼 li 태그 추가
+              let ulTag = $("<ul></ul>");
               detected_obj_list.forEach(function(item) {
-                  $(".pop_detected .detected_list_box ul").append("<li>" + item + "</li>");
+                let liTag = `<li>${item}</li>`;
+                ulTag.append(liTag);
               });
+              $(".pop_detected .detected_list_box").append(ulTag);  
               
               // 디버깅을 위한 콘솔 출력
               console.log('Detected Object List:', detected_obj_list);
@@ -117,9 +158,6 @@ $(".start_btn").on("click", () => {
       });
   }
 });
-
-
-
 
   // 탐색대상 리스트에서 선택할 시,
   $(".pop_detected").on("click", ".detected_list_box ul li, .select_all", (e) => {
@@ -156,31 +194,77 @@ $(".start_btn").on("click", () => {
       const text = $item.text(); // 항목의 텍스트 가져오기
       $selectedList.append("<li>" + text + "</li>"); // .detected_list_box.selected에 추가
     });
-  }
+  }  
 
   function sendSelectedItems() {
-    let detected_obj_list = [];
-    
+    // FormData 객체 생성
+    const formData = new FormData();  
+
+    // 선택된 항목의 텍스트를 배열로 수집
+    const labelFilter = [];
     $(".detected_list_box ul li.selected").each(function() {
-        detected_obj_list.push($(this).text());
+        labelFilter.push($(this).text().trim());
     });
 
-    // 선택된 항목을 서버에 전송
+    // 전역변수 detResult를 FormData에 추가
+    console.log("det_result when call api : ", detResult);
+    formData.append("det_result", JSON.stringify(detResult));  // 전역변수 detResult 사용
+
+    // 선택된 labelFilter를 FormData에 추가
+    console.log("label_filter selected : ", labelFilter);
+    formData.append("label_filter", JSON.stringify(labelFilter));  // 추가된 labelFilter 사용
+
+    // file 객체를 FormData에 추가
+    const fileInput = $("#uploadFilesInput")[0];
+    const file = fileInput.files[0];
+    if (file) {
+        formData.append("file", file);
+        console.log("file : ", file);
+    } else {
+        console.error("No file selected");
+        return;
+    }
+
+    $(".loading-overlay").show();
+
+    // 서버로 FormData 전송
     $.ajax({
-        url: 'http://127.0.0.1:8000/update_labels/',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ label_list: detected_obj_list }),
+        url: "http://localhost:8000/result-video/",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+            responseType: 'blob'  // 서버에서 반환된 데이터를 Blob으로 처리
+        },
         success: function(response) {
-            console.log("Selected items sent to server");
-            console.log("Data sent to server:", { label_list: detected_obj_list }); // 전송한 데이터 출력
-            console.log("Server response:", response);
+            // Blob 데이터를 URL로 변환하여 비디오로 사용
+            const url = window.URL.createObjectURL(new Blob([response]));
+
+            console.log("url from response : ", url);
+
+            // 기존에 추가된 비디오 태그가 있으면 제거
+            $(".video_box video").remove();
+
+            // 새로운 비디오 태그 생성 및 추가
+            var videoTag = $("<video>", {
+                src: url,   // Blob URL을 src 속성에 설정
+                controls: true,
+            });
+
+            // video_box 클래스 내에 비디오 태그 추가
+            $(".video_box").append(videoTag);
+            $(".loading-overlay").hide();
         },
         error: function(xhr, status, error) {
-            console.error('Error:', error);
+            console.error("Error processing video:", error);
+            
+            // 오류가 발생한 경우에도 로딩 오버레이를 숨깁니다.
+            $(".loading-overlay").hide();
         }
     });
-  }
+}
+
 
   // 선택완료 버튼 클릭시,
   $(".comp_select").on("click", (e) => {
@@ -205,22 +289,53 @@ $(".start_btn").on("click", () => {
     $(".right_sec").removeClass("next");
     // $(".detect_btn").addClass("export_btn").text("내보내기");
     $(e.target).addClass("d_none");    
-    $(".export_btn").removeClass("d_none");    
+    $(".export_btn").removeClass("d_none"); 
+
+    // 선택되지 않은 항목을 timeline에서 필터링
+    const selectedLabels = $(".detected_list_box ul li.selected").map(function() {
+      return $(this).text().trim(); // trim()을 사용하여 공백 제거
+    }).get();
+
+    // timeline 데이터가 정의되어 있는지 확인
+    console.log('Before Filtering Timeline:', timeline);
+
+    timeline = timeline.filter(item => selectedLabels.includes(item.label));
+
+    // 필터링된 timeline 데이터 확인
+    console.log('Filtered Timeline:', timeline);
+      
+    // timeline 만큼 li 태그 생성
+    let ulTag = $("<ul></ul>");
+    timeline.forEach(function(item, index) {
+        let liTag = `
+            <li>
+                <p>${index + 1}. <span>[${item.label}]</span></p>
+                <p>등장시간: ${item.start}</p>
+                <p>퇴장시간: ${item.end}</p>
+            </li>`;
+        ulTag.append(liTag);
+    });
+
+    // 기존 ul 태그 제거 후 새로운 ul 태그 추가
+    $(".detected_mark_list").empty().append(ulTag);
   })
 
   // 탐색 대상 및 탐색 시간 텍스트 EXCEL문서로 내보내기
   $(".export_btn").on('click',() => {
     let data = [];
-    
+    let num = 0;
+
     // li 태그 내부의 p 태그에서 데이터를 추출
     $('.detected_mark_list li').each(function() {
       let row = [];
 
+      num++;
       // 각 p 태그를 추출
-      let idText = $(this).find('p').eq(0).text().trim() || '';  // ID 및 사람
+      let idText = $(this).find('p').eq(0).find('span').text().trim() || '';  // ID 및 사람
       let enterTime = $(this).find('p').eq(1).text().split(': ')[1]?.trim() || '';  // 등장시간
       let exitTime = $(this).find('p').eq(2).text().split(': ')[1]?.trim() || '';  // 퇴장시간
 
+      row.push(num);
       row.push(idText);
       row.push(enterTime);
       row.push(exitTime);
@@ -236,6 +351,14 @@ $(".start_btn").on("click", () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     XLSX.writeFile(wb, "output.xlsx");
+
+    // 비디오 다운로드 처리
+    const downloadLink = document.createElement('a');
+    downloadLink.href = $("video").attr("src");
+    downloadLink.download = 'output.mp4';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   });
 
 });
