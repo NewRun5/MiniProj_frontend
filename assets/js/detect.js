@@ -78,85 +78,70 @@ $(".start_btn").on("click", () => {
       // FormData 객체 생성 및 파일 추가
       const formData = new FormData();
       formData.append('file', file);  // 필드 이름이 'file'로 설정되어야 합니다
-
+     
       // 로딩 페이지 표시
       $("#loading-overlay").show();
       $("html, body").addClass("hidden");
+    
+      // **수정된 부분 시작**
+        // AJAX를 사용해 파일 업로드 및 AI 모델 분석 결과 요청
+        var fileInput = $('input[name="uploadFiles"]')[0].files[0];
+        
+        // 파일이 업로드된 경우에만 진행
+        if (fileInput) {
+            var formData = new FormData();
+            formData.append('file', fileInput);
 
-      // AJAX 요청
-      $.ajax({
-          url: 'http://localhost:8000/uploadfile/',
-          type: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,  // FormData를 사용할 때는 contentType을 false로 설정
-          xhr: function() {
-            var xhr = new window.XMLHttpRequest();
-            // 요청이 진행되는 동안
-            xhr.upload.addEventListener("progress", function(evt) {
-                if (evt.lengthComputable) {
-                    var percentComplete = Math.round((evt.loaded / evt.total) * 100);
-                    // 스피너의 진행률을 업데이트
-                    $(".loading-spinner::before").css("top", (100 - percentComplete) + "%");
-                    $(".loading-percentage").text(percentComplete + "%");
+            $.ajax({
+                url: '/uploadfile/',  // 백엔드의 FastAPI 엔드포인트
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response);
+                  // det_result 데이터를 전역변수에 저장
+                   detResult = responseData.det_result || [];
+
+                   timeline = responseData.timeline || [];
+                  
+                  const labelList = responseData.label_list || [];
+
+                    // AI 분석 결과에서 객체 목록을 표시
+                    var objectList = response.label_list;
+                    //var detectionDetails = response.det_result.timeline;
+
+                    // 탐지된 객체 리스트 표시
+//                     var $listBox = $(".detected_list_box ul");
+//                     $listBox.empty();  // 기존 리스트 초기화
+//                     objectList.forEach(function(item) {
+//                         $listBox.append("<li>" + item + "</li>");
+//                     });
+                  
+                    let ulTag = $("<ul></ul>");
+                    objectList.forEach(function(item) {
+                      let liTag = `<li>${item}</li>`;
+                      ulTag.append(liTag);
+                    });
+                    $(".pop_detected .detected_list_box").append(ulTag); 
+                  
+                    // 여기에 detected_obj_list를 사용하는 추가적인 코드 작성
+                    $(".pop_detected, .pop_dt_bg, .bottom_box").addClass("active"); // 탐색 대상 선택 팝업창 활성화
+                    $("html, body").addClass("hidden");
+                    $(".detected_list_box.selected, .btn_sec").removeClass("d_none"); // 선택한 리스트 표시 영역 활성화
+                    $(".right_sec").addClass("next");                                       
+                },
+                  error: function(xhr, status, error) {
+                  console.error('Error:', error);
+                },
+                    complete: function() {
+                    // 서버 응답 후 로딩 페이지 숨기기
+                    $("#loading-overlay").hide();
+                    $("html, body").removeClass("hidden");
                 }
-            }, false);
-            // 요청이 완료되거나 실패했을 때
-            xhr.addEventListener("load", function() {
-                $(".loading-spinner::before").css("top", "0%");
-                $(".loading-percentage").text("100%");
             });
-            xhr.addEventListener("error", function() {
-                $(".loading-spinner::before").css("top", "0%");
-                $(".loading-percentage").text("Error");
-            });
-            return xhr;
-          },
-          success: function(response) {
-
-              console.log("api connected");
-              console.log("response : ", response); // 서버 응답 출력
-
-              // 서버에서 반환된 데이터
-              const responseData = response;
-
-              // det_result 데이터를 전역변수에 저장
-              detResult = responseData.det_result || [];
-
-              timeline = responseData.timeline || [];
-
-              const labelList = responseData.label_list || [];
-              
-              // label_list의 값을 detected_obj_list에 추가
-              let detected_obj_list = [...labelList];  // 배열 복사
-
-              // 배열 길이만큼 li 태그 추가
-              let ulTag = $("<ul></ul>");
-              detected_obj_list.forEach(function(item) {
-                let liTag = `<li>${item}</li>`;
-                ulTag.append(liTag);
-              });
-              $(".pop_detected .detected_list_box").append(ulTag);  
-              
-              // 디버깅을 위한 콘솔 출력
-              console.log('Detected Object List:', detected_obj_list);
-              
-              // 여기에 detected_obj_list를 사용하는 추가적인 코드 작성
-              $(".pop_detected, .pop_dt_bg, .bottom_box").addClass("active"); // 탐색 대상 선택 팝업창 활성화
-              $("html, body").addClass("hidden");
-              $(".detected_list_box.selected, .btn_sec").removeClass("d_none"); // 선택한 리스트 표시 영역 활성화
-              $(".right_sec").addClass("next");
-          },
-          error: function(xhr, status, error) {
-              console.error('Error:', error);
-          },
-          complete: function() {
-              // 서버 응답 후 로딩 페이지 숨기기
-              $("#loading-overlay").hide();
-              $("html, body").removeClass("hidden");
-          }
-      });
-  }
+        }
+        // **수정된 부분 끝**
 });
 
   // 탐색대상 리스트에서 선택할 시,
@@ -333,7 +318,7 @@ $(".start_btn").on("click", () => {
       // 각 p 태그를 추출
       let idText = $(this).find('p').eq(0).find('span').text().trim() || '';  // ID 및 사람
       let enterTime = $(this).find('p').eq(1).text().split(': ')[1]?.trim() || '';  // 등장시간
-      let exitTime = $(this).find('p').eq(2).text().split(': ')[1]?.trim() || '';  // 퇴장시간
+      let exitTime = $(this).find('p').eq(2).text().split(': ')[1]?.trim() || '';  // 퇴장시간      
 
       row.push(num);
       row.push(idText);
@@ -345,7 +330,7 @@ $(".start_btn").on("click", () => {
 
     // SheetJS를 사용해 데이터를 Excel로 내보내기
     const ws = XLSX.utils.aoa_to_sheet([
-        ['ID', '등장시간', '퇴장시간'],  // 헤더
+        ['no', '탐색대상', '등장시간', '퇴장시간'],  // 헤더
         ...data  // 데이터
     ]);
     const wb = XLSX.utils.book_new();
