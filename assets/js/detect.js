@@ -63,16 +63,61 @@ $(document).ready(function() {
         $(".detected_list_box.selected, .btn_sec").removeClass("d_none"); // 선택한 리스트 표시 영역 활성화
         $(".right_sec").addClass("next");
     }
-    // AI 모델에서 반환된 탐색된 객체 리스트
-    const detected_obj_list = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5"];
+// AI 모델에서 반환된 탐색된 객체 리스트
+    // const detected_obj_list = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5"];
 
     // ul 태그 내 기존 li 태그 초기화 (필요에 따라)
-    $(".pop_detected .detected_list_box ul").empty();
+    // $(".pop_detected .detected_list_box ul").empty();
 
     // 배열 길이만큼 li 태그 추가
-    detected_obj_list.forEach(function(item) {
-        $(".pop_detected .detected_list_box ul").append("<li>" + item + "</li>");
-    });    
+    // detected_obj_list.forEach(function(item) {
+        // $(".pop_detected .detected_list_box ul").append("<li>" + item + "</li>");
+    // });    
+   // **수정된 부분 시작**
+        // AJAX를 사용해 파일 업로드 및 AI 모델 분석 결과 요청
+        var fileInput = $('input[name="uploadFiles"]')[0].files[0];
+        
+        // 파일이 업로드된 경우에만 진행
+        if (fileInput) {
+            var formData = new FormData();
+            formData.append('file', fileInput);
+
+            $.ajax({
+                url: '/uploadfile/',  // 백엔드의 FastAPI 엔드포인트
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response);
+
+                    // AI 분석 결과에서 객체 목록을 표시
+                    var objectList = response.label_list;
+                    var detectionDetails = response.det_result.timeline;
+
+                    // 탐지된 객체 리스트 표시
+                    var $listBox = $(".detected_list_box ul");
+                    $listBox.empty();  // 기존 리스트 초기화
+                    objectList.forEach(function(item) {
+                        $listBox.append("<li>" + item + "</li>");
+                    });
+
+                    // 객체의 시간 정보 표시
+                    var $timeBox = $(".detected_mark_list ul");
+                    $timeBox.empty();  // 기존 시간 정보 초기화
+                    for (const [objId, times] of Object.entries(detectionDetails)) {
+                        $timeBox.append("<li><p>객체 ID: " + objId + "</p><p>등장시간: " + times.start + "초</p><p>퇴장시간: " + times.end + "초</p></li>");
+                    }
+
+                    // 분석된 결과가 화면에 표시되도록 UI 업데이트
+                    $(".detected_mark_box").removeClass("d_none");
+                },
+                error: function(error) {
+                    console.error('오류 발생:', error);
+                }
+            });
+        }
+        // **수정된 부분 끝**
 
   });
 
