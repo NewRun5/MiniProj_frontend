@@ -83,47 +83,41 @@ $(".start_btn").on("click", () => {
       $("#loading-overlay").show();
       $("html, body").addClass("hidden");
     
-      // **수정된 부분 시작**
-        // AJAX를 사용해 파일 업로드 및 AI 모델 분석 결과 요청
-        var fileInput = $('input[name="uploadFiles"]')[0].files[0];
-        
-        // 파일이 업로드된 경우에만 진행
-        if (fileInput) {
-            var formData = new FormData();
-            formData.append('file', fileInput);
-
+      // **JSK**
+      
             $.ajax({
-                url: '/uploadfile/',  // 백엔드의 FastAPI 엔드포인트
+                url: 'http://localhost:8000/uploadfile/',  // 백엔드의 FastAPI 엔드포인트
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log(response);
+                  console.log("api connected");
+                  console.log("response : ", response); // 서버 응답 출력
+
+                  // 서버에서 반환된 데이터
+                  const responseData = response;
+
                   // det_result 데이터를 전역변수에 저장
                    detResult = responseData.det_result || [];
 
                    timeline = responseData.timeline || [];
                   
-                  const labelList = responseData.label_list || [];
+                  // const labelList = responseData.label_list || [];
 
                     // AI 분석 결과에서 객체 목록을 표시
-                    var objectList = response.label_list;
-                    //var detectionDetails = response.det_result.timeline;
-
-                    // 탐지된 객체 리스트 표시
-//                     var $listBox = $(".detected_list_box ul");
-//                     $listBox.empty();  // 기존 리스트 초기화
-//                     objectList.forEach(function(item) {
-//                         $listBox.append("<li>" + item + "</li>");
-//                     });
+                    const objectList = responseData.label_list;
                   
+                    // 배열 길이만큼 li 태그 추가
                     let ulTag = $("<ul></ul>");
                     objectList.forEach(function(item) {
                       let liTag = `<li>${item}</li>`;
                       ulTag.append(liTag);
                     });
-                    $(".pop_detected .detected_list_box").append(ulTag); 
+                    $(".pop_detected .detected_list_box").append(ulTag);
+                    
+                    // 디버깅을 위한 콘솔 출력
+                    console.log('Detected Object List:', objectList);
                   
                     // 여기에 detected_obj_list를 사용하는 추가적인 코드 작성
                     $(".pop_detected, .pop_dt_bg, .bottom_box").addClass("active"); // 탐색 대상 선택 팝업창 활성화
