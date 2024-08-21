@@ -4,12 +4,13 @@
 .service_tit {padding-bottom: 20px; font-size: 32px; font-weight: 700; color: #fff;}
 
 /* tv 영역 */
-.antenna {width: 100%; max-width: 800px; min-width:300px; display: flex; justify-content: center; margin-left: calc(-100vw + 800px);}
+.tv_top {display: flex; justify-content: space-between; align-items: baseline; width: calc(100% - 40px); padding: 0 20px; margin-bottom: -30px;}
+.antenna {width: 100%; max-width: 800px; min-width:300px; display: flex; justify-content: center; }
 .antenna li {width: 20px; height: 180px; margin-right: 80px; margin-bottom: -50px; background-color: var(--main-color); border-radius:20px; transform: rotate(-30deg);}
 .antenna li:last-child {transform: rotate(30deg); margin-right: 0; margin-left: 20px;}
 .tv_cont { width: 100%; max-width: 1160px; min-width:300px; padding: 40px; background-color: var(--main-color); border-radius:20px;}
 .tv_box {display: flex; justify-content: space-between;}
-
+.meercam img {height: 200px; }
 /* 왼쪽 영역 */
 .left_sec {width: calc(72% - 80px)}
 .video_box {display: flex; justify-content: center; align-items: center; width: 100%; height: calc(100vh - 410px); background-color: #fff; border-radius:20px; aspect-ratio: 16 / 9;}
@@ -205,6 +206,7 @@ html.hidden_dt, body.hidden_dt {height: 100%; overflow: hidden;}
   .antenna li{height: 70px; margin-bottom: -20px;}
   .tv_cont { padding:20px;}
   .tv_box {flex-direction: column;}
+  .meercam img {display: none;}
   .left_sec, .right_sec {width: 100%;}
   .start_box {padding: 20px 0;}
   .deco_btn, .start_btn {width: 80px; height: 80px;}
